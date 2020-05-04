@@ -226,7 +226,7 @@ SPtr<LevelEditorScript::BaseLevelEditorAction> LevelEditorScript::Basic::Update(
 				if (nearestRes)
 				{
 					m_pObject->m_selectedObjectSet = nearestRes->Collider->GetOwner()->shared_from_this()->GetParent();
-					GameMgr.m_Editor_SelectObj = m_pObject->m_selectedObjectSet;
+					GameMgr.SetSelectObj(m_pObject->m_selectedObjectSet.lock());
 					m_pObject->m_selectedObject = nearestRes->Collider->GetOwner()->shared_from_this();
 					GameMgr.m_Editor_Log.AddLog(u8"選択モードへ移行");
 				}

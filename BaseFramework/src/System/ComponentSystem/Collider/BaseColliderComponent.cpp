@@ -34,7 +34,7 @@ void BaseColliderComponent::EditorDraw()
 	if (m_enable == false)return;
 
 	// EditorŽž‚Ì‚Ý && ‘I‘ð•¨‚Ì‚Ý
-	if (GameMgr.m_Editor_SelectObj.lock().get() == GetOwner()) {
+	if (GameMgr.GetSelectObj().lock().get() == GetOwner()) {
 		KdStateSaver StateSaver;
 		StateSaver.SaveDS();
 		KD3D.GetDevContext()->OMSetDepthStencilState(ShMgr.m_ds_ZCompareOFF_ZWriteOFF, 0);

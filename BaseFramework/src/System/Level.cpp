@@ -335,7 +335,7 @@ void Level::ImGuiUpdate()
 			if (ImGui::BeginTabItem("Scene Setting"))
 			{
 				// オブジェクト追加ボタン
-				if (GameMgr.m_Editor_SelectObj.expired() == false) {
+				if (GameMgr.GetSelectObj().expired() == false) {
 					ImGui::Button("Add Object");
 					ImGuiShowHelp(u8"選択Objectの子として、新規Objectを追加する", false);
 					// 左クリックでコンテキストメニュー表示
@@ -348,9 +348,9 @@ void Level::ImGuiUpdate()
 								// 追加
 								//AddObject(p);
 								// 選択物の子として追加
-								p->SetParent(GameMgr.m_Editor_SelectObj.lock());
+								p->SetParent(GameMgr.GetSelectObj().lock());
 								// こいつを選択にする
-								GameMgr.m_Editor_SelectObj = p;
+								GameMgr.SetSelectObj(p);
 							}
 						}
 
@@ -385,12 +385,16 @@ void Level::ImGuiUpdate()
 						ImGuiTreeNodeFlags_OpenOnDoubleClick |
 						ImGuiTreeNodeFlags_OpenOnArrow;
 					// 選択されている時は、選択状態のフラグを付ける
-					if (GameMgr.m_Editor_SelectObj.lock() == obj)treeFlags |= ImGuiTreeNodeFlags_Selected;
+					if (GameMgr.GetSelectObj().lock() == obj)
+					{
+						treeFlags |= ImGuiTreeNodeFlags_Selected;
+						
+					}
 
 					// 選択されたアイテムがツリーの内側に隠れている場合にツリーを開く
 					std::function<bool(const SPtr<Object>&)> selectedchild = [this, &selectedchild](const SPtr<Object>& obj)
 					{
-						if (GameMgr.m_Editor_SelectObj.lock() == obj)
+						if (GameMgr.GetSelectObj().lock() == obj)
 						{
 							return true;
 						}
@@ -421,18 +425,19 @@ void Level::ImGuiUpdate()
 					// ツリーノードがクリックされた時
 					if (ImGui::IsItemClicked())
 					{
-						GameMgr.m_Editor_SelectObj = obj;
+						GameMgr.SetSelectObj(obj);
 					}
 
 					//-----------------
 					// Auto Scroll
 					//-----------------
 					// オブジェクトが選択された瞬間
-					if (treeFlags & ImGuiTreeNodeFlags_Selected)
+					if (ImGui::IsItemFocused())
 					{
+						GameMgr.m_Editor_Log.AddLog("bettu");
 
-						//ImGui::SetScrollHereY();
-						GameMgr.m_Editor_Log.AddLog("u");
+						ImGui::GetID(obj.get());
+						
 					}
 
 					//-----------------
@@ -533,7 +538,7 @@ void Level::ImGuiUpdate()
 										// Rootの子にする
 										p->SetParent(m_root);
 										// こいつを選択状態にする
-										GameMgr.m_Editor_SelectObj = p;
+										GameMgr.SetSelectObj(p);
 									}
 								}
 
@@ -556,7 +561,7 @@ void Level::ImGuiUpdate()
 							// Rootの子にする
 							newObj->SetParent(obj->GetParent());
 							// こいつを選択状態にする
-							GameMgr.m_Editor_SelectObj = newObj;
+							GameMgr.SetSelectObj(newObj);
 						}
 
 						// 削除

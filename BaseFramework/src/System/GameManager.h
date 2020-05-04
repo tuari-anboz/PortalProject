@@ -422,10 +422,23 @@ public:
 	// ロード中のフラグ(マルチスレッドでのロード画面表示用)
 	bool m_isLoading = false;
 
-	// (Editor)選択物
-	WPtr<Object>	m_Editor_SelectObj;
-	// (Editor)前回の選択物
-	WPtr<Object>	m_Editor_BeforeSelectObj;
+	//------------------------------------------
+	// Editor
+	//------------------------------------------
+	// (Editor)選択物セット
+	void SetSelectObj(const SPtr<Object>& obj)
+	{
+		m_Editor_JustSelected = true;
+		m_Editor_BeforeSelectObj = m_Editor_SelectObj;
+		m_Editor_SelectObj = obj;
+	}
+	// (Editor)選択物ゲット
+	WPtr<Object> GetSelectObj()
+	{
+		return m_Editor_SelectObj;
+	}
+	// (Editor)選択したばかりの時
+	bool m_Editor_JustSelected;
 	// (Editor)カメラ
 	EditorCamera	m_Editor_Camera;
 	// (Editor)カメラコンポーネントを使用する
@@ -464,6 +477,14 @@ private:
 
 	// 変更レベルファイル名(予約用)
 	std::string		m_changeLevelFile;
+
+	//------------------------------------------
+	// Editor
+	//------------------------------------------
+	// (Editor)選択物
+	WPtr<Object>	m_Editor_SelectObj;
+	// (Editor)前回の選択物
+	WPtr<Object>	m_Editor_BeforeSelectObj;
 
 	// (仮)波テクスチャ
 	WaveTexture m_wave;
