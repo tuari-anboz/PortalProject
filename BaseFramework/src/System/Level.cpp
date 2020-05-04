@@ -146,7 +146,7 @@ void Level::Draw()
 	ShMgr.m_cb8_Light.Write();
 	
 	// オブジェクトの3D描画処理
-	m_root->DrawObject();
+	//m_root->DrawObject();
 
 	// (0)シャドウマップ生成
 	{
@@ -379,6 +379,14 @@ void Level::ImGuiUpdate()
 					}
 					*/
 
+					//-----------------
+					// Auto Scroll
+					//-----------------
+					// オブジェクトが選択されたばかりでかつ見えてないとき
+					if (GameMgr.m_Editor_JustSelected && !ImGui::IsItemVisible())
+					{
+						ImGui::SetScrollHereY();
+					}
 
 					// ツリーの動作フラグ
 					int treeFlags = ImGuiTreeNodeFlags_DefaultOpen |
@@ -388,7 +396,7 @@ void Level::ImGuiUpdate()
 					if (GameMgr.GetSelectObj().lock() == obj)
 					{
 						treeFlags |= ImGuiTreeNodeFlags_Selected;
-						
+						GameMgr.m_Editor_JustSelected = false;
 					}
 
 					// 選択されたアイテムがツリーの内側に隠れている場合にツリーを開く
@@ -426,18 +434,6 @@ void Level::ImGuiUpdate()
 					if (ImGui::IsItemClicked())
 					{
 						GameMgr.SetSelectObj(obj);
-					}
-
-					//-----------------
-					// Auto Scroll
-					//-----------------
-					// オブジェクトが選択された瞬間
-					if (ImGui::IsItemFocused())
-					{
-						GameMgr.m_Editor_Log.AddLog("bettu");
-
-						ImGui::GetID(obj.get());
-						
 					}
 
 					//-----------------
