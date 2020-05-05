@@ -443,8 +443,21 @@ void GameManager::Run()
 		// 選択物のエディター描画を実行
 		{
 			auto select = m_Editor_SelectObj.lock();
-			if (select) {
-				select->EditorDrawObject();
+			if (select)
+			{
+				// 子のエディター描画も実行
+				std::function<void(const SPtr<Object>&)> rec = [this, &rec](const SPtr<Object>& obj)
+				{
+					obj->EditorDrawObject();
+
+					// 子を再帰
+					for (auto&& child : obj->GetChilds())
+					{
+						rec(child);
+					}
+				};
+				// 関数を実行
+				rec(select);
 			}
 		}
 	}

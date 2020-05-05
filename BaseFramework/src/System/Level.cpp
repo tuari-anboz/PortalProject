@@ -379,15 +379,6 @@ void Level::ImGuiUpdate()
 					}
 					*/
 
-					//-----------------
-					// Auto Scroll
-					//-----------------
-					// オブジェクトが選択されたばかりでかつ見えてないとき
-					if (GameMgr.m_Editor_JustSelected && !ImGui::IsItemVisible())
-					{
-						ImGui::SetScrollHereY();
-					}
-
 					// ツリーの動作フラグ
 					int treeFlags = ImGuiTreeNodeFlags_DefaultOpen |
 						ImGuiTreeNodeFlags_OpenOnDoubleClick |
@@ -396,6 +387,14 @@ void Level::ImGuiUpdate()
 					if (GameMgr.GetSelectObj().lock() == obj)
 					{
 						treeFlags |= ImGuiTreeNodeFlags_Selected;
+						//-----------------
+						// Auto Scroll
+						//-----------------
+						// オブジェクトが選択されたばかりでかつ見えてないとき
+						if (GameMgr.m_Editor_JustSelected && !ImGui::IsItemVisible())
+						{
+							ImGui::SetScrollHereY();
+						}
 						GameMgr.m_Editor_JustSelected = false;
 					}
 
