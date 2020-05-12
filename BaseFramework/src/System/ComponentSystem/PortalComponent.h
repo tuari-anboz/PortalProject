@@ -40,6 +40,7 @@ public:
 	// 自分のクラスデータをoutJsonへ格納する
 	virtual void Serialize(json11::Json::object& outJson) override;
 
+
 private:
 	// ポータルのサイズ
 	KdVec3 m_size;
@@ -51,4 +52,5 @@ private:
 	//test
 	KdMatrix cm;
 	KdVec3 cv;
+
 };

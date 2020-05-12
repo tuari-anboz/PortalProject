@@ -232,7 +232,7 @@ void Object::ImGuiUpdate()
 	// 名前
 	ImGuiInputString("Name", m_name);
 	// 質量
-	ImGui::DragFloat(u8"質量", &m_mass,0.01f,0,1000);
+	ImGui::DragFloat(u8"質量", &m_mass, 0.01f, 0, 1000);
 	// 行列
 	KdMatrix m = GetMatrix();
 	ImGuizmoEditTransform(m, ShMgr.m_mView, ShMgr.m_mProj, nullptr);
@@ -242,7 +242,7 @@ void Object::ImGuiUpdate()
 	// 全コンポーネントのImGui処理
 	for (auto&& comp : m_components) {
 
-		ImGui::PushID( (int)comp.get() );
+		ImGui::PushID((int)comp.get());
 
 		bool bOpen = ImGui::CollapsingHeader(comp->ClassName().c_str(),
 			ImGuiTreeNodeFlags_DefaultOpen);
@@ -272,6 +272,29 @@ void Object::ImGuiUpdate()
 
 
 		ImGui::PopID();
+	}
+}
+
+void Object::EditorUpdateObject()
+{
+	// オブジェクトの持っているModelコンポーネントを全て取得
+	auto modelComps = GetComponents<ModelComponent>();
+
+	// 取得したモデルコンポーネントを使用して当たり判定を作成
+	for (auto&& mcomp : modelComps)
+	{
+		// モデルの当たり判定を作成
+		auto meshCol = std::make_shared<MeshColliderComponent>();
+		meshCol->Set(mcomp->GetFilename(), GetMatrix(), false, 0x00400000, 0x00000001);
+		meshCol->SetTag("Editor");
+		meshCol->SetOwner(this);
+		meshCol->Update();
+	}
+
+	// 子を処理
+	for (auto&& child : m_childs)
+	{
+		child->EditorUpdateObject();
 	}
 }
 
@@ -477,13 +500,18 @@ void GameManager::Run()
 
 		// 実行中はGUIウィンドウを赤くする
 		bool isPlay = m_Editor_IsPlay;
-		if(isPlay)
+		if (isPlay)
 		{
 			ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.3f, 0, 0, 0.6f));
 		}
 
 		// ImGui Demo ウィンドウ表示 ※すごく参考になるウィンドウです。imgui_demo.cpp参照。
 		ImGui::ShowDemoWindow(nullptr);
+
+		// (Editor)Editor更新
+		m_level->EditorUpdate();
+
+		// (Editor)ImGui更新
 		ImGuiUpdate();
 
 		ImGui::ShowMetricsWindow(nullptr);
@@ -616,7 +644,7 @@ SPtr<Object> GameManager::Duplicate(const SPtr<Object> obj)
 	// Rootの子にする
 	newObj->SetParent(obj->GetParent());
 	// こいつを選択状態にする
-	GameMgr.m_Editor_SelectObj = newObj;
+	GameMgr.SetSelectObj(newObj);
 	return newObj;
 }
 
@@ -639,7 +667,7 @@ void Object::SetMatrix(const KdMatrix & m, bool moveChild)
 	if (moveChild)
 	{
 		// 子以下のすべてのGameObjectのTransformにmDeltaを合成していく関数
-		std::function<void(const SPtr<Object>&)> proc =  [this, &proc,&mDelta](const SPtr<Object>& obj)
+		std::function<void(const SPtr<Object>&)> proc = [this, &proc, &mDelta](const SPtr<Object>& obj)
 		{
 			// 変化前の行列をバックアップ
 			obj->m_mPrevWorld = obj->m_mWorld;

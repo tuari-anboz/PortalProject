@@ -88,6 +88,9 @@ public:
 	// (Editor)ImGui処理
 	virtual void ImGuiUpdate();
 
+	// (Editor)更新処理
+	virtual void EditorUpdateObject();
+
 	// (Editor)エディター描画
 	void EditorDrawObject() {
 		// 全コンポーネントのEditorDrawを実行
@@ -472,6 +475,9 @@ public:
 	WaveTexture&	GetWaveTex() { return m_wave; }
 
 private:
+	// (Editor)Editor更新
+	void EditorUpdate();
+
 	// ImGui処理
 	void ImGuiUpdate();
 

@@ -22,6 +22,9 @@ public:
 	void Update();
 	void Draw();
 
+	// Editorˆ—
+	void EditorUpdate();
+
 	// ImGuiˆ—
 	void ImGuiUpdate();
 

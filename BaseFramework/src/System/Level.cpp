@@ -120,13 +120,11 @@ void Level::Update()
 	// ①判定オブジェクトリストをクリアする
 	ColMgr.ClearList();
 
-	// ルートオブジェクト実行
+	// ②ルートオブジェクト実行
 	m_root->UpdateObject();
 
 	// ③と④コリジョン処理実行(②で登録されたコライダー達を判定し、結果を通知する)
 	ColMgr.Run();
-
-
 }
 
 void Level::Draw()
@@ -146,123 +144,123 @@ void Level::Draw()
 	ShMgr.m_cb8_Light.Write();
 	
 	// オブジェクトの3D描画処理
-	//m_root->DrawObject();
+	m_root->DrawObject();
 
-	// (0)シャドウマップ生成
-	{
-		// 関数を作成
-		auto drawProc = [this]()
-		{
-			m_root->DrawShadowMapObject();
-		};
-		ShMgr.m_genShadowMapSh.Generate(drawProc);
-	}
+	//// (0)シャドウマップ生成
+	//{
+	//	// 関数を作成
+	//	auto drawProc = [this]()
+	//	{
+	//		m_root->DrawShadowMapObject();
+	//	};
+	//	ShMgr.m_genShadowMapSh.Generate(drawProc);
+	//}
 
-	// オブジェクトの3D描画処理
-	{
-		// 現在のRT,Zバッファと保存
-		KdRTSaver rtSave;
+	//// オブジェクトの3D描画処理
+	//{
+	//	// 現在のRT,Zバッファと保存
+	//	KdRTSaver rtSave;
 
-		// RT,Zバッファ変更用
-		KdRTChanger rtc;
-		rtc.RT(0, m_rtWork[0]);
-		rtc.Depth(*KD3D.GetZBuffer());
-		rtc.SetToDevice();		// RT,Zバッファを切り替える
+	//	// RT,Zバッファ変更用
+	//	KdRTChanger rtc;
+	//	rtc.RT(0, m_rtWork[0]);
+	//	rtc.Depth(*KD3D.GetZBuffer());
+	//	rtc.SetToDevice();		// RT,Zバッファを切り替える
 
-		// RTをクリア
-		m_rtWork[0].ClearRT({ 0, 0, 0, 1 });
-		// Zバッファをクリア
-		KD3D.GetZBuffer()->ClearDepth();
+	//	// RTをクリア
+	//	m_rtWork[0].ClearRT({ 0, 0, 0, 1 });
+	//	// Zバッファをクリア
+	//	KD3D.GetZBuffer()->ClearDepth();
 
-		// 全物体を描画
-		m_root->DrawObject();
-	}
+	//	// 全物体を描画
+	//	m_root->DrawObject();
+	//}
 
-	// ②Work[1]へコピー
-	{
-		// 現在のRT,Zバッファと保存
-		KdRTSaver rtSave;
+	//// ②Work[1]へコピー
+	//{
+	//	// 現在のRT,Zバッファと保存
+	//	KdRTSaver rtSave;
 
-		// RT,Zバッファ変更用
-		KdRTChanger rtc;
-		rtc.RT(0, m_rtWork[1]);
-		rtc.Depth(nullptr);
-		rtc.SetToDevice();		// RT,Zバッファを切り替える
+	//	// RT,Zバッファ変更用
+	//	KdRTChanger rtc;
+	//	rtc.RT(0, m_rtWork[1]);
+	//	rtc.Depth(nullptr);
+	//	rtc.SetToDevice();		// RT,Zバッファを切り替える
 
-		ShMgr.m_postProcessSh.CopyDraw(m_rtWork[0]);
-	}
+	//	ShMgr.m_postProcessSh.CopyDraw(m_rtWork[0]);
+	//}
 
-	// ③半透明物体描画
-	{
-		// 現在のRT,Zバッファと保存
-		// 現在のRT,Zバッファと保存
-		KdRTSaver rtSave;
+	//// ③半透明物体描画
+	//{
+	//	// 現在のRT,Zバッファと保存
+	//	// 現在のRT,Zバッファと保存
+	//	KdRTSaver rtSave;
 
-		// RT,Zバッファ変更用
-		KdRTChanger rtc;
-		rtc.RT(0, m_rtWork[1]);
-		rtc.Depth(*KD3D.GetZBuffer());
-		rtc.SetToDevice();		// RT,Zバッファを切り替える
+	//	// RT,Zバッファ変更用
+	//	KdRTChanger rtc;
+	//	rtc.RT(0, m_rtWork[1]);
+	//	rtc.Depth(*KD3D.GetZBuffer());
+	//	rtc.SetToDevice();		// RT,Zバッファを切り替える
 
-		// Work[0]をシェーダにセットしておく
-		m_rtWork[0].PSSetShaderResource(10);
+	//	// Work[0]をシェーダにセットしておく
+	//	m_rtWork[0].PSSetShaderResource(10);
 
-		// 半透明物体を描画
-		m_root->DrawTransparencyObject();
+	//	// 半透明物体を描画
+	//	m_root->DrawTransparencyObject();
 
-		// テクスチャを解除
-		KdTexture::s_emptyTex.PSSetShaderResource(10);
-	}
+	//	// テクスチャを解除
+	//	KdTexture::s_emptyTex.PSSetShaderResource(10);
+	//}
 
-	// ④高輝度抽出
-	{
-		// 現在のRT,Zバッファと保存
-		KdRTSaver rtSave;
+	//// ④高輝度抽出
+	//{
+	//	// 現在のRT,Zバッファと保存
+	//	KdRTSaver rtSave;
 
-		// RT,Zバッファ変更用
-		KdRTChanger rtc;
-		rtc.RT(0, m_rtHighBrightness);
-		rtc.Depth(nullptr);
-		rtc.SetToDevice();		// RT,Zバッファを切り替える
+	//	// RT,Zバッファ変更用
+	//	KdRTChanger rtc;
+	//	rtc.RT(0, m_rtHighBrightness);
+	//	rtc.Depth(nullptr);
+	//	rtc.SetToDevice();		// RT,Zバッファを切り替える
 
-		// ②Workから高輝度抽出
-		ShMgr.m_postProcessSh.BrightFilteringDraw(m_rtWork[1]);
-	}
+	//	// ②Workから高輝度抽出
+	//	ShMgr.m_postProcessSh.BrightFilteringDraw(m_rtWork[1]);
+	//}
 
-	// ⑤高輝度抽出画像をMGF
-	ShMgr.m_postProcessSh.GenerateBlur(m_blurTex, m_rtHighBrightness);
+	//// ⑤高輝度抽出画像をMGF
+	//ShMgr.m_postProcessSh.GenerateBlur(m_blurTex, m_rtHighBrightness);
 
-	// ⑥全ぼかし画像を加算合成描画
-	{
-		KdStateSaver stSave;
-		stSave.SaveBS();		// 現在のBlendStateを記憶しておく
+	//// ⑥全ぼかし画像を加算合成描画
+	//{
+	//	KdStateSaver stSave;
+	//	stSave.SaveBS();		// 現在のBlendStateを記憶しておく
 
-		float blendFactor[] = { 0,0,0,0 };
-		// 加算合成に切り替え
-		KD3D.GetDevContext()->OMSetBlendState(ShMgr.m_bsAdd, blendFactor, 0xFFFFFFF);
+	//	float blendFactor[] = { 0,0,0,0 };
+	//	// 加算合成に切り替え
+	//	KD3D.GetDevContext()->OMSetBlendState(ShMgr.m_bsAdd, blendFactor, 0xFFFFFFF);
 
-		// RTを切り替える
-		{
-			// 現在のRT,Zバッファと保存
-			KdRTSaver rtSave;
+	//	// RTを切り替える
+	//	{
+	//		// 現在のRT,Zバッファと保存
+	//		KdRTSaver rtSave;
 
-			// RT,Zバッファ変更用
-			KdRTChanger rtc;
-			rtc.RT(0, m_rtWork[1]);
-			rtc.Depth(nullptr);
-			rtc.SetToDevice();		// RT,Zバッファを切り替える
+	//		// RT,Zバッファ変更用
+	//		KdRTChanger rtc;
+	//		rtc.RT(0, m_rtWork[1]);
+	//		rtc.Depth(nullptr);
+	//		rtc.SetToDevice();		// RT,Zバッファを切り替える
 
-			//
-			for (int i = 0; i < 5; i++)
-			{
-				ShMgr.m_postProcessSh.CopyDraw(m_blurTex.m_rt[i][0], { 0.2f, 0.2f, 0.2f, 1 });	// 20%
-			}
-		}
-	}
+	//		//
+	//		for (int i = 0; i < 5; i++)
+	//		{
+	//			ShMgr.m_postProcessSh.CopyDraw(m_blurTex.m_rt[i][0], { 0.2f, 0.2f, 0.2f, 1 });	// 20%
+	//		}
+	//	}
+	//}
 
-	// ⑦Work -> BackBuffer
-	//ShMgr.m_postProcessSh.CopyDraw(m_rtWork);
-	ShMgr.m_postProcessSh.ToneMappingDraw(m_rtWork[1]);
+	//// ⑦Work -> BackBuffer
+	////ShMgr.m_postProcessSh.CopyDraw(m_rtWork);
+	//ShMgr.m_postProcessSh.ToneMappingDraw(m_rtWork[1]);
 
 	// オブジェクトのエフェクト描画
 	KD3D.GetDevContext()->OMSetDepthStencilState(ShMgr.m_ds_ZCompareON_ZWriteOFF, 0);	// Z書き込みOFF
@@ -283,6 +281,72 @@ void Level::Draw()
 		KD3D.GetDevContext()->OMSetDepthStencilState(ShMgr.m_ds_ZCompareON_ZWriteON, 0);
 	}
 	ShMgr.m_KdSpriteSh.End();
+}
+
+void Level::EditorUpdate()
+{
+	// ①判定オブジェクトリストをクリアする
+	ColMgr.ClearList();
+
+	// ②ルートオブジェクト実行
+	m_root->EditorUpdateObject();
+
+	// 左クリック時でImGuiWindowの上にマウスカーソルがない時
+	if (ImGui::IsMouseClicked(0) && !ImGui::IsAnyWindowHovered() && !ImGuizmo::IsOver())
+	{
+		// マウスカーソルの位置を取得
+		POINT nowPos;
+		GetCursorPos(&nowPos);
+		ScreenToClient(APP.m_Window.GetHWnd(), &nowPos);
+
+		// 現在のカーソルの位置から最近接座標を求める
+		KdVec3 cursorPos = { (float)nowPos.x, (float)nowPos.y,0.0f };
+		KdVec3 transScreenToWorldNearPos;
+
+		ShMgr.Convert2Dto3D(transScreenToWorldNearPos, cursorPos);
+
+		// 現在のカーソルの位置から最遠方座標を求める
+		cursorPos = { (float)nowPos.x, (float)nowPos.y,1.0f };
+		KdVec3 transScreenToWorldFarPos;
+
+		ShMgr.Convert2Dto3D(transScreenToWorldFarPos, cursorPos);
+
+		KdVec3 rayDir = transScreenToWorldFarPos - transScreenToWorldNearPos;
+		//rayDir.Normalize();
+
+		// マウスをクリックした場所からレイを飛ばし判定する
+		auto rayCol = std::make_shared<RayColliderComponent>();
+		rayCol->Set(transScreenToWorldNearPos, rayDir, true, 0x00000001, 0x00400000);
+		rayCol->SetOwner(m_root.get());
+		rayCol->SetTag("Editor");
+		rayCol->Update();
+
+		rayCol->m_onHitStay = [this, rayCol](BaseColliderComponent* collider)
+		{
+			// 全てのあたった物から、一番近いやつを検出
+			float nearest = FLT_MAX;
+			const CollisionResult* nearestRes = nullptr;
+			// ヒットしたもの全部
+			for (auto&& res : collider->GetResults())
+			{
+				if (res.Collider->GetTag() == "Editor")
+				{
+					// より近いものがあれば、それを
+					if (nearest > res.Dist) {
+						nearestRes = &res;
+						nearest = res.Dist;
+					}
+				}
+			}
+			if (nearestRes)
+			{
+				GameMgr.SetSelectObj(nearestRes->Collider->GetOwner()->shared_from_this());
+			}
+		};
+	}
+
+	// ③と④コリジョン処理実行(②で登録されたコライダー達を判定し、結果を通知する)
+	ColMgr.Run();
 }
 
 void Level::ImGuiUpdate()
@@ -416,6 +480,8 @@ void Level::ImGuiUpdate()
 								}
 							}
 						}
+
+						return false;
 					};
 
 					// 子を再帰

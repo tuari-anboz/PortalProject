@@ -22,6 +22,8 @@ public:
 	KdBoneController& GetBc() { return m_bc; }
 	// アニメータ取得
 	KdAnimator& GetAnimator() { return m_anim; }
+	// ファイル名取得
+	std::string GetFilename() { return m_modelFilename; }
 	// スクリプトlキーコールバック関数セット
 	void SetScriptProc(std::function<void(KdAnimeKey_Script*)> proc)
 	{

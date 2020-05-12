@@ -302,8 +302,6 @@ void PortalComponent::Update()
 	//// デフォルトのカメラ行列も移動
 	//m_Portal1DefaultCamMat.Move_Local(ownerMovedVec);
 	//m_Portal2DefaultCamMat.Move_Local(ownerMovedVec);
-
-
 }
 
 void PortalComponent::Draw()
@@ -317,6 +315,7 @@ void PortalComponent::ImGuiUpdate()
 void PortalComponent::EditorDraw()
 {
 	ShMgr.m_KdPrimSh.DrawLine(cv, { 0,0,0 }, { 1, 1, 0, 1 });
+
 }
 
 // _rayposは発射した位置

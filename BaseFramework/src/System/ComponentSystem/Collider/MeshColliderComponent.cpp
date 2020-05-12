@@ -67,7 +67,11 @@ void MeshColliderComponent::DebugDraw(const KdVec4 & color)
 void MeshColliderComponent::LoadModel(const std::string& filename)
 {
 	m_filename = filename;
-	m_model = KDResFactory.GetGameModel(m_filename);
+	auto model = KDResFactory.GetGameModel(m_filename);
+	if (model)
+	{
+		m_model = model;
+	}
 
 }
 
