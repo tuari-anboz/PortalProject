@@ -16,22 +16,27 @@ void PortalComponent::Update()
 	{
 		if (coll->GetTag() == "Top")
 		{
-			coll->m_onHitEnter = [this](BaseColliderComponent* collider)
+			coll->m_onHitStay = [this](BaseColliderComponent* collider)
 			{
 				// ヒット数カウンター
 				int hitCounter = 0;
+				const CollisionResult* result;
 				for (auto&& res : collider->GetResults())
 				{
 					if (res.Collider->GetTag() == "RePosPortal")
 					{
 						hitCounter++;
+						result = &res;
 					}
 				}
 
-				// ヒット回数が一回しか無かった場合ポータルを正しい位置に直す
 				if (hitCounter == 1)
 				{
-
+					GameMgr.m_Editor_Log.AddLog("a");
+					KdMatrix m = GetOwner()->GetMatrix();
+					m.Move(KdVec3(0, result->Dist - 1.001f, 0));
+					
+					GetOwner()->SetMatrix(m, false);
 				}
 			};
 		}
