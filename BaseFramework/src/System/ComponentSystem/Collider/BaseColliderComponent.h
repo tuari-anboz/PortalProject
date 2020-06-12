@@ -84,7 +84,6 @@ public:
 	}
 
 	// ヒット通知関数オブジェクト
-	// ※今回はプログラムし易さ重視で関数オブジェクトにしましたが、Unityのようにvirtual関数で通知する方がスマートです。
 	std::function<void(BaseColliderComponent*)>	m_onHitEnter;	// ヒット時の初回のみ実行される
 	std::function<void(BaseColliderComponent*)>	m_onHitStay;	// ヒット中ずっと実行される
 	std::function<void(BaseColliderComponent*)>	m_onHitExit;	// ヒットしなくなった初回のみ実行される

@@ -32,17 +32,6 @@ void PlayerScript::Update()
 	auto input = owner->GetComponent<InputComponent>();
 	if (input == nullptr)return;
 
-	if (input->m_keys[VK_F3])
-	{
-		GameMgr.m_Editor_Log.AddLog(u8"エディターモードへ移行");
-		if (m_editorPrefabName.empty())return;
-		auto editorObj = GameMgr.Instantiate(KDResFactory.GetJson(m_editorPrefabName));
-		if (editorObj == false)return;
-		editorObj->SetParent(GameMgr.m_level->GetRoot());
-		owner->Delete();
-		return;
-	}
-
 	// ヒットストップ中でないとき
 	if (m_hitStop <= 0) {
 
@@ -161,7 +150,7 @@ void PlayerScript::Update()
 								// レイ判定のコンポーネントを取得する
 								auto coll = owner->GetComponent<RayColliderComponent>();
 								if (coll) {
-									float rayY = coll->GetRayLocalPos().y * owner->GetMatrix().GetYScale();
+									float rayY = coll->GetRayLocalPos().y * owner->GetMatrix().GetYScale() + 1.0f;
 									// ヒット時の実行される関数を登録
 									coll->m_onHitStay = [this, rayY, owner](BaseColliderComponent* collider) {
 										// 全てのあたった物から、一番近いやつを検出
@@ -172,7 +161,8 @@ void PlayerScript::Update()
 											{
 												// より近いものがあれば、それを
 												if (nearest > res.Dist) {
-													nearestRes = &res; nearest = res.Dist;
+													nearestRes = &res; 
+													nearest = res.Dist;
 												}
 											}
 										}
@@ -280,7 +270,7 @@ void PlayerScript::Update()
 			// レイ判定のコンポーネントを取得する
 			auto coll = owner->GetComponent<RayColliderComponent>();
 			if (coll) {
-				float rayY = coll->GetRayLocalPos().y * owner->GetMatrix().GetYScale();
+				float rayY = coll->GetRayLocalPos().y * owner->GetMatrix().GetYScale() + 1.0f;
 				// ヒット時の実行される関数を登録
 				coll->m_onHitStay = [this, rayY, owner](BaseColliderComponent* collider)
 				{
@@ -357,13 +347,6 @@ void PlayerScript::DrawEffect()
 
 }
 
-/*
-void Chara::Draw()
-{
-
-}
-*/
-
 void PlayerScript::ImGuiUpdate()
 {
 	// ObjectのほうのImGuiUpdateを実行
@@ -413,7 +396,7 @@ SPtr<PlayerScript::BaseAction> PlayerScript::Stand::Update()
 		if (input->m_keysRepeat[VK_SPACE]) {
 			// 行動切り替え
 			auto as = std::make_shared<JumpStart>();
-			as->m_vForce.Set(0, 0.2f, 0);
+			as->m_vForce.Set(0, 0.075f, 0);
 
 			return as;
 		}
@@ -444,7 +427,7 @@ SPtr<PlayerScript::BaseAction> PlayerScript::Stand::Update()
 	m_pChara->m_vForce *= 0.9f;
 
 	// 重力
-	m_pChara->m_vForce.y -= 0.01f;
+	m_pChara->m_vForce.y -= 9.8f * 0.016f * 0.016f;
 
 	// 力移動
 	KdMatrix m = owner->GetMatrix();
@@ -541,6 +524,7 @@ SPtr<PlayerScript::BaseAction> PlayerScript::Walk::Update()
 
 			// 移動
 			m.Move(vDir*0.05f);
+			//m_pChara->m_vForce += vDir * 0.05f;
 			owner->SetMatrix(m, false);
 		}
 	}
@@ -559,8 +543,7 @@ SPtr<PlayerScript::BaseAction> PlayerScript::Walk::Update()
 			//model->GetAnimator().ChangeAnimeSmooth("ジャンプ開始", false, 1.0f);
 			// 行動切り替え
 			auto as = std::make_shared<JumpStart>();
-			as->m_vForce.Set(0, 0.2f, 0);
-			as->m_vForce += vDir * 0.05f;
+			as->m_vForce.Set(0, 0.075f, 0);
 
 			return as;
 		}
@@ -591,7 +574,7 @@ SPtr<PlayerScript::BaseAction> PlayerScript::Walk::Update()
 	m_pChara->m_vForce *= 0.9f;
 
 	// 重力
-	m_pChara->m_vForce.y -= 0.01f;
+	m_pChara->m_vForce.y -= 9.8f * 0.016f * 0.016f;
 
 	// 力移動
 	KdMatrix m = owner->GetMatrix();
@@ -616,7 +599,7 @@ SPtr<PlayerScript::BaseAction> PlayerScript::Shot::Update()
 		if (coll) {
 			coll->SetEnable(true);
 			// ヒット時の実行される関数を登録
-			coll->m_onHitStay = [this, rayY = coll->GetRayLocalPos().y, rayPos = coll->GetRayPos(), camObj = cam](BaseColliderComponent* collider)
+			coll->m_onHitStay = [this, rayPos = coll->GetRayPos(), camObj = cam](BaseColliderComponent* collider)
 			{
 				// 全てのあたった物から、一番近いやつを検出
 				float nearest = FLT_MAX;
@@ -631,11 +614,12 @@ SPtr<PlayerScript::BaseAction> PlayerScript::Shot::Update()
 						}
 					}
 				}
-				//
+				// 
 				if (nearestRes) {
+					// 一番近い物がポータルが設置可能な場合はポータルを設置し、そうでない場合はエフェクトを変更する
 					if (nearestRes->Collider->GetTag() == "SetPortal")
 					{
-						auto portal = camObj->GetParent()->GetComponent<PortalComponent>();
+						auto portal = camObj->GetParent()->GetComponent<UsePortalComponent>();
 						if (portal)
 						{
 							// 当たったオブジェクトのモデルコンポーネントを取得
@@ -652,7 +636,22 @@ SPtr<PlayerScript::BaseAction> PlayerScript::Shot::Update()
 							// メッシュの法線を取得
 							auto meshNormal = mesh->GetMesh()->GetExtFaceArray()[nearestRes->FaceIdx].vN;
 							if (!meshNormal) return;
-							portal->Set(rayPos, nearestRes->Pos, meshNormal, 1);
+							// メッシュの法線を行列で変換
+							meshNormal.TransformNormal(nearestRes->Collider->GetOwner()->GetMatrix());
+							// ポータルを設置
+							portal->Set(camObj->GetMatrix().GetPos(), nearestRes->Pos, meshNormal, 1);
+						}
+					}
+					else
+					{
+						// 弾着エフェクトを生成
+						auto obj = GameMgr.Instantiate(KDResFactory.GetJson("data/Texture/Effect/FlashEffect.pref"));
+						if (obj)
+						{
+							KdMatrix m = obj->GetMatrix();
+							m.SetPos(nearestRes->Pos);
+							obj->SetMatrix(m, false);
+							obj->SetParent(GameMgr.m_level->GetRoot());
 						}
 					}
 				}
@@ -701,7 +700,7 @@ SPtr<PlayerScript::BaseAction> PlayerScript::Shot2::Update()
 				{
 					if (nearestRes->Collider->GetTag() == "SetPortal")
 					{
-						auto portal = camObj->GetParent()->GetComponent<PortalComponent>();
+						auto portal = camObj->GetParent()->GetComponent<UsePortalComponent>();
 						if (portal)
 						{
 							// 当たったオブジェクトのモデルコンポーネントを取得
@@ -718,7 +717,10 @@ SPtr<PlayerScript::BaseAction> PlayerScript::Shot2::Update()
 							// メッシュの法線を取得
 							auto meshNormal = mesh->GetMesh()->GetExtFaceArray()[nearestRes->FaceIdx].vN;
 							if (!meshNormal) return;
-							portal->Set(coll->GetRayPos(), nearestRes->Pos, meshNormal, 2);
+							// メッシュの法線を行列で変換
+							meshNormal.TransformNormal(nearestRes->Collider->GetOwner()->GetMatrix());
+							// ポータルを設置
+							portal->Set(camObj->GetMatrix().GetPos(), nearestRes->Pos, meshNormal, 2);
 						}
 					}
 				}
@@ -988,18 +990,16 @@ SPtr<PlayerScript::BaseAction> PlayerScript::JumpUp::Update()
 		}
 	}
 
-	// 行動切り替え
-	return std::make_shared<JumpDown>();
-
 	// 重力
-	m_pChara->m_vForce.y -= 0.01f;
+	m_pChara->m_vForce.y -= 9.81f * 0.016f * 0.016f;
 
 	// 力移動
 	KdMatrix m = owner->GetMatrix();
 	m.Move(m_pChara->m_vForce);
 	owner->SetMatrix(m, false);
 
-	return nullptr;
+	// 行動切り替え
+	return std::make_shared<JumpDown>();
 }
 
 SPtr<PlayerScript::BaseAction> PlayerScript::JumpDown::Update()
@@ -1101,7 +1101,7 @@ SPtr<PlayerScript::BaseAction> PlayerScript::JumpDown::Update()
 	}
 
 	// 重力
-	m_pChara->m_vForce.y -= 0.01f;
+	m_pChara->m_vForce.y -= 9.8f * 0.016f * 0.016f;
 
 	// 力移動
 	KdMatrix m = owner->GetMatrix();
@@ -1131,11 +1131,8 @@ SPtr<PlayerScript::BaseAction> PlayerScript::Landing::Update()
 	// 行動切り替え
 	return std::make_shared<Stand>();
 
-	// 摩擦
-	m_pChara->m_vForce *= 0.9f;
-
 	// 重力
-	m_pChara->m_vForce.y -= 0.01f;
+	m_pChara->m_vForce.y -= 9.8f * 0.016f * 0.016f;
 
 	// 力移動
 	KdMatrix m = owner->GetMatrix();

@@ -191,6 +191,7 @@ void Applicatoin::Loop()
 	REGISTER_COMP_CLASS(BoxComponent);
 	REGISTER_COMP_CLASS(GettingBoxComponent);
 	REGISTER_COMP_CLASS(AutomaticDoorComponent);
+	REGISTER_COMP_CLASS(SimpleCalculatorComponent);
 
 	//================================
 	// ƒNƒ‰ƒX“o˜^

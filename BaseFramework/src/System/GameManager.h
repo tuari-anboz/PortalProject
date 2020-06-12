@@ -1,5 +1,6 @@
 #pragma once
 
+#include "LevelEditor.h"
 #include "EditorCamera.h"
 
 // コンポーネント系
@@ -11,11 +12,10 @@
 #include "ComponentSystem/CameraComponent.h"
 #include "ComponentSystem/LightComponent.h"
 #include "ComponentSystem/AudioComponent.h"
-#include "ComponentSystem/PortalComponent.h"
+#include "ComponentSystem/UsePortalComponent.h"
 #include "ComponentSystem/TitleScript.h"
 #include "ComponentSystem/PlayerScript.h"
 #include "ComponentSystem/FpsCameraComponent.h"
-#include "ComponentSystem/LevelEditorScript.h"
 #include "ComponentSystem/LoadLevelComponent.h"
 #include "ComponentSystem/UIButtonComponent.h"
 #include "ComponentSystem/RigidBodyComponent.h"
@@ -31,6 +31,7 @@
 #include "../Game/Components/PortalGunComponent.h"
 #include "../Game/Components/BoxComponent.h"
 #include "../Game/Components/GettingBoxComponent.h"
+#include "../Game/Components/SimpleCalculatorComponent.h"
 
 // オブジェクト基本クラス
 class Object : public std::enable_shared_from_this<Object>
@@ -152,9 +153,11 @@ public:
 	// 指定した型のコンポーネントを検索
 	// Tはこの関数を実行するときに指定する
 	template<class T>
-	SPtr<T> GetComponent() {
+	SPtr<T> GetComponent() 
+	{
 		// 全コンポーネントを検索
-		for (auto&& comp : m_components) {
+		for (auto&& comp : m_components)
+		{
 			// ダウンキャストでT型へキャストを試みる
 			auto p = std::dynamic_pointer_cast<T>(comp);
 			// キャストできたら、そいつで確定！！
@@ -442,6 +445,8 @@ public:
 	}
 	// (Editor)選択したばかりの時
 	bool m_Editor_JustSelected;
+	// (Editor)レベルエディター
+	LevelEditor		m_Editor_LevelEditor;
 	// (Editor)カメラ
 	EditorCamera	m_Editor_Camera;
 	// (Editor)カメラコンポーネントを使用する

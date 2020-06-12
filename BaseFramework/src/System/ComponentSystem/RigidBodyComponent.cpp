@@ -86,13 +86,15 @@ void RigidBodyComponent::UpdateRigidBody()
 			// この形状の剛体を生成
 			m_body = std::make_shared<KdPhysicsRigidBody>();
 			m_body->Create(boxShape, m, m_mass);	// 剛体の作成 質量は0より大きい値を指定すると物理挙動が行われる
+			m_body->SetKinematic(m_isKinematic);		// 自分で動かすような剛体はキネマティックに(BOXGENのドアなど)
+
 			m_body->SetFriction(m_friction);		// 摩擦力
 			m_body->SetRestitution(m_restitution);	// 反発力
 			m_body->SetLinearDamping(0.0f);
 			m_body->SetAngularDamping(0.050f);
 
 			// 剛体をスリープ状態にさせない
-			if(m_NonSleep)m_body->SetNonSleep();
+			if (m_NonSleep)m_body->SetNonSleep();
 
 			// コンポーネントが有効な時のみ剛体を物理ワールドへ追加する
 			if (m_enable)
@@ -139,6 +141,16 @@ void RigidBodyComponent::UpdateRigidBody()
 				// 物理ワールドへ剛体を追加する
 				m_body->AddToWorld(GameMgr.m_physicsWorld, m_group, 1);
 			}
+		}
+	}
+
+	// 剛体とゲーム内の行列を同期させる
+	if (GetOwner())
+	{
+		if (m_body)
+		{
+			m_body->AddToWorld(GameMgr.m_physicsWorld, m_group, 1);
+			m_body->SetMatrix(GetOwner()->GetMatrix());
 		}
 	}
 }

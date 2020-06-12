@@ -28,16 +28,9 @@ public:
 	// GameModel取得
 	const SPtr<KdGameModel>& GetGameModel() const { return m_model; }
 
-
-	//----------------------------
-	// コンポーネント名取得
-	//----------------------------
-	virtual std::string GetImGuiComment() { return u8"エフェクト用に3Dメッシュモデルを描画するコンポーネント\n・モデルデータとテクスチャを別に指定可能\n・ビルボーディングの設定も可能"; }
-
 	//----------------------------
 	// 描画処理
 	//----------------------------
-
 	// 3D描画
 	virtual void DrawEffect() override;
 

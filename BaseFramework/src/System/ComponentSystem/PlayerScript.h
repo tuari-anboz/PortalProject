@@ -117,6 +117,14 @@ public:
 		outJson["PrefabName"] = m_editorPrefabName;
 	}
 
+	// èÛë‘ä«óù
+	enum State
+	{
+		STAND_STATE,
+		WALK_STATE,
+		SHOT_STATE,
+	};
+
 private:
 
 	// Hp
