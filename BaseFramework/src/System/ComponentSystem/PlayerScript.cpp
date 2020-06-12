@@ -149,7 +149,9 @@ void PlayerScript::Update()
 							{
 								// レイ判定のコンポーネントを取得する
 								auto coll = owner->GetComponent<RayColliderComponent>();
-								if (coll) {
+								if (coll)
+								{
+									// プレイヤーの身長を決める
 									float rayY = coll->GetRayLocalPos().y * owner->GetMatrix().GetYScale() + 1.0f;
 									// ヒット時の実行される関数を登録
 									coll->m_onHitStay = [this, rayY, owner](BaseColliderComponent* collider) {
@@ -161,8 +163,7 @@ void PlayerScript::Update()
 											{
 												// より近いものがあれば、それを
 												if (nearest > res.Dist) {
-													nearestRes = &res; 
-													nearest = res.Dist;
+													nearestRes = &res; nearest = res.Dist;
 												}
 											}
 										}
@@ -269,7 +270,9 @@ void PlayerScript::Update()
 		{
 			// レイ判定のコンポーネントを取得する
 			auto coll = owner->GetComponent<RayColliderComponent>();
-			if (coll) {
+			if (coll)
+			{
+				// プレイヤーの身長を決める
 				float rayY = coll->GetRayLocalPos().y * owner->GetMatrix().GetYScale() + 1.0f;
 				// ヒット時の実行される関数を登録
 				coll->m_onHitStay = [this, rayY, owner](BaseColliderComponent* collider)
