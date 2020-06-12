@@ -94,10 +94,10 @@ SPtr<BoxGeneratorComponent::BaseBoxGeneratorAction> BoxGeneratorComponent::Gener
 					if (doorComp == nullptr)return std::make_shared<Generic>();
 					// ドアを開ける
 					doorComp->Open();
-					// 古いボックスを削除する
-					auto box = owner->FindObject("Box");
-					if (box == nullptr)return std::make_shared<Generic>();
-					box->Delete();
+					//// 古いボックスを削除する
+					//auto box = owner->FindObject("Box");
+					//if (box == nullptr)return std::make_shared<Generic>();
+					//box->Delete();
 
 					return std::make_shared<ON>();
 				}

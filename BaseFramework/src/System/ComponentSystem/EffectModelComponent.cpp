@@ -87,7 +87,7 @@ void EffectModelComponent::ImGuiUpdate()
 	}
 	ImGuiShowHelp(u8"描画用の3Dモデルを選択", false);
 
-	// 描画Modelファイル
+	// 描画画像ファイル
 	if (ImGuiResourceButton(u8"テクスチャ", m_texFilename, { ".png", ".jpg", ".tga", ".hdr", ".bmp" })) {
 		bChanged = true;
 	}

@@ -1,38 +1,29 @@
 #pragma once
 
-#include "BaseComponent.h"
-
-class LevelEditorScript : public BaseComponent
+class LevelEditor
 {
 public:
-	// 初期設定
-	virtual void Start() override;
+	LevelEditor(){}
 
-	// 処理
-	virtual void Update() override;
+	void Init();
 
-	// ImGui処理
-	virtual void ImGuiUpdate() override;
+	void Update();
 
-	//----------------------------
-	// Serialize / Deserialize
-	//----------------------------
-	// JSONデータから、初期設定を行う
-	virtual void Deserialize(const json11::Json& jsonObj) override;
-	// JSONデータ化する
-	virtual void Serialize(json11::Json::object& outJsonObj) override;
-	
+	// 
+	void ImGuiUpdate();
+
+	void Deserialize(const json11::Json& jsonObj);
+
+	void Serialize(json11::Json::object& outJsonObj);
+
+
 private:
-	// 生成するプレハブ名
-	std::string m_generationPrefabName = "";
-	// 生成するプレイヤー名
-	std::string m_playerPrefabName = "";
-	// 選択したオブジェクトをコピーするか
+
+	// オブジェクトをコピーするかどうか
 	bool m_isCopy = true;
-	// 選択したオブジェクトセット
-	WPtr<Object> m_selectedObjectSet;
-	// 選択したオブジェクト
-	WPtr<Object> m_selectedObject;
+
+	// 生成、置換するプレハブファイル名
+	std::string m_generationPrefabName = "";
 
 	//===========================
 	// アクションステートクラス
@@ -44,7 +35,7 @@ private:
 		// 戻り値：次の行動クラス
 		virtual SPtr<BaseLevelEditorAction> Update() = 0;
 		// キャラへのアドレス
-		LevelEditorScript*	m_pObject = nullptr;
+		LevelEditor*	m_pObject = nullptr;
 	};
 	// 「基本」行動
 	class Basic : public BaseLevelEditorAction {
@@ -63,18 +54,13 @@ private:
 	public:
 		virtual SPtr<BaseLevelEditorAction> Update() override;
 	};
-	// 「編集」行動
-	class Edit : public BaseLevelEditorAction
-	{
-	public:
-		virtual SPtr<BaseLevelEditorAction> Update() override;
-	};
 	// 「置換」行動
 	class Replace : public BaseLevelEditorAction
 	{
 	public:
 		virtual SPtr<BaseLevelEditorAction> Update() override;
 	};
+
 	// 現在の行動
 	SPtr<BaseLevelEditorAction>	m_as = nullptr;
 };

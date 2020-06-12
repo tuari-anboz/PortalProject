@@ -31,9 +31,11 @@ void Object::UpdateObject()
 	// 削除フラグがOnのコンポーネントを消す
 	{
 		auto it = m_components.begin();
-		while (it != m_components.end()) {
+		while (it != m_components.end())
+		{
 			// 削除フラグOn?
-			if ((*it)->IsDelete()) {
+			if ((*it)->IsDelete())
+			{
 				// リストから削除して、次のやつを受け取る
 				it = m_components.erase(it);
 				continue;
@@ -103,7 +105,8 @@ void Object::UpdateObject()
 void Object::PreDrawObject()
 {
 	// 全コンポーネントの処理を実行
-	for (auto&& comp : m_components) {
+	for (auto&& comp : m_components)
+	{
 		comp->PreDraw();
 	}
 
@@ -123,7 +126,8 @@ void Object::DrawObject()
 	if (m_isActive)
 	{
 		// 全コンポーネントの処理を実行
-		for (auto&& comp : m_components) {
+		for (auto&& comp : m_components)
+		{
 			comp->Draw();
 		}
 
@@ -144,7 +148,8 @@ void Object::DrawTransparencyObject()
 	if (m_isActive)
 	{
 		// 全コンポーネントの処理を実行
-		for (auto&& comp : m_components) {
+		for (auto&& comp : m_components)
+		{
 			comp->DrawTransparency();
 		}
 
@@ -152,7 +157,8 @@ void Object::DrawTransparencyObject()
 		DrawTransparency();
 
 		// 子を処理
-		for (auto&& child : m_childs) {
+		for (auto&& child : m_childs)
+		{
 			child->DrawTransparencyObject();
 		}
 	}
@@ -164,7 +170,8 @@ void Object::DrawShadowMapObject()
 	if (m_isActive)
 	{
 		// 全コンポーネントの処理を実行
-		for (auto&& comp : m_components) {
+		for (auto&& comp : m_components)
+		{
 			comp->DrawShadowMap();
 		}
 
@@ -172,7 +179,8 @@ void Object::DrawShadowMapObject()
 		DrawTransparency();
 
 		// 子を処理
-		for (auto&& child : m_childs) {
+		for (auto&& child : m_childs)
+		{
 			child->DrawShadowMapObject();
 		}
 	}
@@ -185,7 +193,8 @@ void Object::DrawEffectObject()
 	if (m_isActive)
 	{
 		// 全コンポーネントの処理を実行
-		for (auto&& comp : m_components) {
+		for (auto&& comp : m_components)
+		{
 			comp->DrawEffect();
 		}
 
@@ -193,7 +202,8 @@ void Object::DrawEffectObject()
 		DrawEffect();
 
 		// 子を処理
-		for (auto&& child : m_childs) {
+		for (auto&& child : m_childs)
+		{
 			child->DrawEffectObject();
 		}
 	}
@@ -214,10 +224,13 @@ void Object::ImGuiUpdate()
 	// コンポーネント追加ボタン
 	ImGui::Button("Add Component");
 	// 左クリックでコンテキストメニュー表示
-	if (ImGui::BeginPopupContextItem("AddComponentPopup", 0)) {
+	if (ImGui::BeginPopupContextItem("AddComponentPopup", 0))
+	{
 		// 登録されている全クラス
-		for (auto&& cls : GameMgr.m_componentClassMaker) {
-			if (ImGui::Selectable(cls.first.c_str())) {
+		for (auto&& cls : GameMgr.m_componentClassMaker)
+		{
+			if (ImGui::Selectable(cls.first.c_str()))
+			{
 				// そのコンポーネントを生成
 				auto comp = cls.second();
 				// 追加
@@ -240,7 +253,8 @@ void Object::ImGuiUpdate()
 
 
 	// 全コンポーネントのImGui処理
-	for (auto&& comp : m_components) {
+	for (auto&& comp : m_components)
+	{
 
 		ImGui::PushID((int)comp.get());
 
@@ -248,9 +262,11 @@ void Object::ImGuiUpdate()
 			ImGuiTreeNodeFlags_DefaultOpen);
 
 		// 右クリックで操作ポップアップ
-		if (ImGui::BeginPopupContextItem("ComponentOperation")) {
+		if (ImGui::BeginPopupContextItem("ComponentOperation"))
+		{
 			// 削除
-			if (ImGui::Selectable("Delete")) {
+			if (ImGui::Selectable("Delete"))
+			{
 				comp->Delete();	// 削除フラグOn
 			}
 			if (ImGui::Selectable("MoveUp"))
@@ -266,10 +282,10 @@ void Object::ImGuiUpdate()
 		}
 
 		// CollapsingHeaderを開いているときは内容を表示する
-		if (bOpen) {
+		if (bOpen)
+		{
 			comp->ImGuiUpdate();
 		}
-
 
 		ImGui::PopID();
 	}
@@ -352,11 +368,10 @@ void GameManager::Init()
 	REGISTER_COMP_CLASS(LightComponent);
 	REGISTER_COMP_CLASS(AudioListenerComponent);
 	REGISTER_COMP_CLASS(AudioComponent);
-	REGISTER_COMP_CLASS(PortalComponent);
+	REGISTER_COMP_CLASS(UsePortalComponent);
 	REGISTER_COMP_CLASS(TitleScript);
 	REGISTER_COMP_CLASS(PlayerScript);
 	REGISTER_COMP_CLASS(FpsCameraComponent);
-	REGISTER_COMP_CLASS(LevelEditorScript);
 	REGISTER_COMP_CLASS(UIButtonComponent);
 	REGISTER_COMP_CLASS(RigidBodyComponent);
 	REGISTER_COMP_CLASS(RideButtonComponent);
@@ -385,6 +400,10 @@ void GameManager::Init()
 	m_level = std::make_shared<Level>();
 	m_level->Load("data/StageDataLevelEditor.json");
 
+	//================================
+	// エディターの初期化
+	//================================
+	m_Editor_LevelEditor.Init();
 	m_Editor_Log.AddLog(u8"Editor起動");
 
 	// (仮) 波テクスチャ作成
@@ -505,11 +524,14 @@ void GameManager::Run()
 			ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.3f, 0, 0, 0.6f));
 		}
 
-		// ImGui Demo ウィンドウ表示 ※すごく参考になるウィンドウです。imgui_demo.cpp参照。
-		ImGui::ShowDemoWindow(nullptr);
+		// (Editor)Editor更新
+		m_Editor_LevelEditor.Update();
 
 		// (Editor)Editor更新
 		m_level->EditorUpdate();
+
+		// ImGui Demo ウィンドウ表示
+		ImGui::ShowDemoWindow(nullptr);
 
 		// (Editor)ImGui更新
 		ImGuiUpdate();
@@ -550,7 +572,8 @@ void GameManager::ImGuiUpdate()
 	//=============================
 	// GraphicsDebugウィンドウ
 	//=============================
-	if (ImGui::Begin("Graphics Debug", nullptr)) {
+	if (ImGui::Begin("Graphics Debug", nullptr))
+	{
 		// 波用 高さマップ
 		ImGui::Image(m_wave.m_rtHeight[0]->GetSRV(),
 			ImVec2(200, 200));
@@ -569,12 +592,13 @@ void GameManager::ImGuiUpdate()
 	//=============================
 	// Inspectorウィンドウ
 	//=============================
-	if (ImGui::Begin("Inspector", nullptr)) {
+	if (ImGui::Begin("Inspector", nullptr))
+	{
 		SPtr<Object> select = m_Editor_SelectObj.lock();
-		if (select) {
+		if (select)
+		{
 			// 
 			select->ImGuiUpdate();
-
 		}
 	}
 	ImGui::End();
@@ -585,16 +609,19 @@ void GameManager::ImGuiUpdate()
 	if (ImGui::Begin("Game Manager", nullptr))
 	{
 		// 実行
-		if (ImGui::Checkbox(u8"実行", &m_Editor_IsPlay)) {
+		if (ImGui::Checkbox(u8"実行", &m_Editor_IsPlay))
+		{
 			static json11::Json::object saveLevel;
 
 			// 実行
-			if (m_Editor_IsPlay) {
+			if (m_Editor_IsPlay) 
+			{
 				// 現在のレベルをシリアライズ
 				m_level->Serialize(saveLevel);
 			}
 			// 停止
-			else {
+			else
+			{
 				m_level->Deserialize(saveLevel);
 				saveLevel.clear();
 			}

@@ -2,10 +2,11 @@
 
 #include "System/ComponentSystem/BaseComponent.h"
 
-// 重力箱コンポーネント
-// 当たり判定の制御や挙動を担当する
-
-class BoxComponent : public BaseComponent
+//
+//
+//
+//
+class SimpleCalculatorComponent : public BaseComponent
 {
 public:
 	// 初期設定
@@ -25,7 +26,13 @@ public:
 	// JSONデータ化する
 	virtual void Serialize(json11::Json::object& outJsonObj) override;
 
-
 private:
-	int test = 0;
+	// オブジェクトが生成されてからのフレーム数
+	int m_LifeTime = 0;
+	// オブジェクトの寿命フレーム数
+	int	m_LifeSpan = 0;
+	// 毎フレームの変化量
+	KdVec3 m_vScale = { 1.0f,1.0f,1.0f };
+	KdVec3 m_vRot, m_vTrans;
+
 };

@@ -49,7 +49,7 @@ void FpsCameraComponent::Update()
 
 	mCam.SetRotation(mR);
 
-	mCam.LookAtDir(mCam.GetZAxis());
+	mCam.LookAtDirMin(mCam.GetZAxis());
 
 	KdVec3 vec{ 0,m_height,0 };
 	mCam.SetPos(parentObj->GetMatrix().GetPos() + vec);

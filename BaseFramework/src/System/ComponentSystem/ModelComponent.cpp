@@ -24,6 +24,11 @@ void ModelComponent::SetModel(const std::string & filename)
 		m_anim.SetAnimationList(m_model->GetAnimeList());
 		// アニメーション再生
 		m_anim.ChangeAnime(m_playAnimename, m_loopAnime);
+
+		// 全ボーンを再計算
+		m_bc.CalcBoneMatrix();
+		// 全ボーンの行列を定数バッファに書き込む
+		m_bc.WriteBoneConstantBuffer();
 	}
 }
 

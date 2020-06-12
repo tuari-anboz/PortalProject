@@ -253,7 +253,7 @@ void Level::Draw()
 	//		//
 	//		for (int i = 0; i < 5; i++)
 	//		{
-	//			ShMgr.m_postProcessSh.CopyDraw(m_blurTex.m_rt[i][0], { 0.2f, 0.2f, 0.2f, 1 });	// 20%
+	//			ShMgr.m_postProcessSh.CopyDraw(m_blurTex.m_rt[i][0], { 3.0f, 3.0f, 3.0f, 1 });	// 20%
 	//		}
 	//	}
 	//}
@@ -602,7 +602,6 @@ void Level::ImGuiUpdate()
 										GameMgr.SetSelectObj(p);
 									}
 								}
-
 							}
 						}
 
@@ -660,11 +659,19 @@ void Level::ImGuiUpdate()
 				ImGui::EndTabItem();
 			}
 			// グラフィック設定タブ
-			if (ImGui::BeginTabItem("GraphicsSetting"))
+			if (ImGui::BeginTabItem("Graphics Setting"))
 			{
 				// グラフィック設定
 				ImGui::ColorEdit3("Fog Color", m_fogColor);
 				ImGui::DragFloat(u8"Fog密度", &m_fogDensity, 0.001f, 0, 10.0f);
+
+				ImGui::EndTabItem();
+			}
+
+			// エディター設定タブ
+			if (ImGui::BeginTabItem("Editor Setting"))
+			{
+				GameMgr.m_Editor_LevelEditor.ImGuiUpdate();
 
 				ImGui::EndTabItem();
 			}
