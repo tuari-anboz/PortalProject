@@ -1,6 +1,8 @@
 Library/
 BaseFramework/.vs/
-BaseFramework/data/
+BaseFramework/data/Models
+BaseFramework/data/Sound
+BaseFramework/data/Texture
 BaseFramework/Debug/
 BaseFramework/Debug2/
 BaseFramework/PortalProject.sln
