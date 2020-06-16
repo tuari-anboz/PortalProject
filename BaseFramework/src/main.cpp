@@ -188,6 +188,7 @@ void Applicatoin::Loop()
 	//================================
 	REGISTER_COMP_CLASS(CharaAIInputComponent);
 	REGISTER_COMP_CLASS(PortalGunComponent);
+	REGISTER_COMP_CLASS(PortalComponent);
 	REGISTER_COMP_CLASS(BoxComponent);
 	REGISTER_COMP_CLASS(GettingBoxComponent);
 	REGISTER_COMP_CLASS(AutomaticDoorComponent);

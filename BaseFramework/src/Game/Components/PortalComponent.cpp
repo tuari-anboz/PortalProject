@@ -1,6 +1,6 @@
 #include "main.h"
 
-#include "../GameManager.h"
+#include "System/GameManager.h"
 
 #include "PortalComponent.h"
 

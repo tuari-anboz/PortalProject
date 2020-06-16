@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BaseComponent.h"
+#include "System/ComponentSystem/BaseComponent.h"
 
 //=============================
 // ポータルコンポーネント

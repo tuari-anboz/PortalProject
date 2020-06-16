@@ -32,6 +32,7 @@
 #include "../Game/Components/BoxComponent.h"
 #include "../Game/Components/GettingBoxComponent.h"
 #include "../Game/Components/SimpleCalculatorComponent.h"
+#include "../Game/Components/PortalComponent.h"
 
 // オブジェクト基本クラス
 class Object : public std::enable_shared_from_this<Object>
