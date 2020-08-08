@@ -16,8 +16,6 @@ class PortalComponent : public BaseComponent
 
 	// (Editor)GUIˆ—
 	virtual void ImGuiUpdate() override;
-	// (Editor—p)•`‰æ
-	virtual void EditorDraw() override;
 
 	//=============================
 	// Deserialize / Serialize

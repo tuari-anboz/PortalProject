@@ -16,7 +16,7 @@ void PortalComponent::Update()
 	{
 		if (coll->GetTag() == "Top")
 		{
-			coll->m_onHitStay = [this](BaseColliderComponent* collider)
+			coll->m_onHitEnter = [this](BaseColliderComponent* collider)
 			{
 				// ヒット数カウンター
 				int hitCounter = 0;
@@ -32,7 +32,6 @@ void PortalComponent::Update()
 
 				if (hitCounter == 1)
 				{
-					GameMgr.m_Editor_Log.AddLog("a");
 					KdMatrix m = GetOwner()->GetMatrix();
 					m.Move(KdVec3(0, result->Dist - 1.001f, 0));
 					
@@ -60,12 +59,15 @@ void PortalComponent::Update()
 
 void PortalComponent::ImGuiUpdate()
 {
+	BaseComponent::ImGuiUpdate();
 }
 
 void PortalComponent::Deserialize(const json11::Json & jsonObj)
 {
+	BaseComponent::Deserialize(jsonObj);
 }
 
 void PortalComponent::Serialize(json11::Json::object & outJson)
 {
+	BaseComponent::Serialize(outJson);
 }
